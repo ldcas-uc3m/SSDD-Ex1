@@ -16,10 +16,9 @@ cd ..
 mv tmp.pdf report.pdf
 rm tmp.*
 
-# TODO: Remove whatever is in the .gitignore
 
 # zip it (excluding useless stuff)
-zip -r ../outfile.zip . -x zip.sh report\* *.git\* README.md
+tar -rvf ../ejercicio_evaluable1.tar -X exclude_file .
 
 # cleanup
 git reset --hard HEAD
