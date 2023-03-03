@@ -3,18 +3,22 @@ Implementación de las operaciones del cliente
 */
 
 #include <stdio.h>
+#include <mqueue.h>
 
 #include "claves.h"
 
 
 
 int init(void) {
-
+    
     return 0;
 }
 
 
 int set_value(int key, char* value1, int value2, double value3) {
+
+    Struct Tupla tuple;
+    if (strlen(value1))
 
     return 0;
 }
@@ -40,12 +44,5 @@ int exist(int key) {
 
 int copy_key(int key1, int key2) {
     
-    return 0;
-}
-
-
-
-
-int main() {
     return 0;
 }

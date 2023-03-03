@@ -5,17 +5,17 @@ CC = gcc
 CFLAGS = -g -I$(INSTALL_PATH)/include -Wall
 
 LDFLAGS = -L$(INSTALL_PATH)/lib/
-#LDLIBS = -lpthread -lm
+LDLIBS = -lpthread -lm
 
 
 all: $(BIN_FILES)
 .PHONY : all
 
 cliente: cliente.o
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
 servidor: servidor.o
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 
 # TODO: libclaves.so
 
