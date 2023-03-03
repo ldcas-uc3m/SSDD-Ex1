@@ -5,8 +5,6 @@ Definición de las operaciones del cliente
 #ifndef _CLAVES_H_
 #define _CLAVES_H_
 
-#include "comm.h"
-
 
 int init(void);
 int set_value(int key, char* value1, int value2, double value3);
