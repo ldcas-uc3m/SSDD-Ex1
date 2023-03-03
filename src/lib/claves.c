@@ -1,3 +1,7 @@
+/*
+Implementación de las operaciones del cliente
+*/
+
 #include <stdio.h>
 
 #include "claves.h"

@@ -32,3 +32,5 @@ La estructura del código a desarrollar se muestra en la siguiente figura:
 
 
 # Instalación y ejecución
+
+LD_LIBRARY_PATH = lib/ ??

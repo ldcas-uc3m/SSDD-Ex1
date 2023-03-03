@@ -1,5 +1,11 @@
+/*
+Definición de las operaciones del cliente
+*/
+
 #ifndef _CLAVES_H_
 #define _CLAVES_H_
+
+#include "comm.h"
 
 
 int init(void);
