@@ -4,8 +4,8 @@ CC = gcc
 
 CFLAGS = -g -I$(INSTALL_PATH)/include -Wall
 
-LDFLAGS = -L$(INSTALL_PATH)/lib/
-LDLIBS = -lpthread -lm
+LDFLAGS = -L$(INSTALL_PATH)
+LDLIBS = -lpthread -lm -lrt
 
 
 all: $(BIN_FILES)
