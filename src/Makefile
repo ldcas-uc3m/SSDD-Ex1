@@ -16,6 +16,9 @@ cliente: cliente.o
 	
 servidor: servidor.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
+	
+test: test.o
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 
 # TODO: libclaves.so
 
