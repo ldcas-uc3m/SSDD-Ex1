@@ -19,6 +19,9 @@ servidor: servidor.o
 	
 test: test.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
+	
+linked_list: linked_list.o
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 
 # TODO: libclaves.so
 
