@@ -320,5 +320,8 @@ int destroy(List* l) {
         *l = aux->next;
         free(aux);
     }
+
+	pthread_mutex_destroy(&mutex_l);
+
     return 0;
 }
