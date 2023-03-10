@@ -4,6 +4,9 @@ Definición de las operaciones del cliente
 
 #ifndef _CLAVES_H_
 #define _CLAVES_H_
+#define PREFIX ClienteNumero_
+
+char* nameColaCliente;
 
 
 int init(void);

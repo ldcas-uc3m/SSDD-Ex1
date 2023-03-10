@@ -18,9 +18,34 @@ Implementación de las operaciones del cliente
 #define NUM_MENSAJES 10;
 
 
-
 int init(void) {
-    
+
+    nameColaCliente = malloc(MAX_NAME_COLA * sizeof(char));
+
+    char pid=malloc(MAX_NAME_COLA * sizeof(char));
+
+    sprintf(pid,"%d", getpid());
+
+    strcat(nameColaCliente, pid);
+    free(pid);
+
+    struct Peticion nuevaPeticion;
+    nuevaPeticion.opcode = INIT;
+    nuevaPeticion.cola_client = nameColaCliente;
+    //Meterlo en la cola
+
+    mqd_t mqd;
+    struct mq_attr atributos;
+    atributos.mq_msgsize = sizeof(nuevaPeticion);
+    atributos.mq_maxmsg = NUM_MENSAJES;    
+
+    //Ver el codigo de error
+    struct Respuesta res;
+    if (res.result!=0){
+        free(nameColaCliente);
+        return -1;
+    }
+
     return 0;
 }
 
@@ -42,6 +67,7 @@ int set_value(int key, char* value1, int value2, double value3) {
     nuevaPeticion.opcode = SET_VALUE;
     nuevaPeticion.value = tuple;
     nuevaPeticion.alt_key = NULL;
+    nuevaPeticion.cola_client = nameColaCliente;
 
     //Meterlo en la cola
 
@@ -53,6 +79,7 @@ int set_value(int key, char* value1, int value2, double value3) {
     //Ver el codigo de error
     struct Respuesta res;
     if (res.result!=0){
+        free(nameColaCliente);
         return -1;
     }
     return 0;
@@ -69,6 +96,7 @@ int get_value(int key, char* value1, int* value2, double* value3) {
     nuevaPeticion.opcode = GET_VALUE;
     nuevaPeticion.value = tuple;
     nuevaPeticion.alt_key = NULL;
+    nuevaPeticion.cola_client = nameColaCliente;
 
     //Pedir la informacion a la cola
     struct Respuesta res;
@@ -76,6 +104,7 @@ int get_value(int key, char* value1, int* value2, double* value3) {
 
     //Store informacion
     if (res.result!=0){
+        free(nameColaCliente);
         return -1;
     }
     *value1 = res.value.value1;
@@ -103,6 +132,7 @@ int modify_value(int key, char* value1, int value2, double value3) {
     nuevaPeticion.opcode = MODIFY_VALUE;
     nuevaPeticion.value = tuple;
     nuevaPeticion.alt_key = NULL;
+    nuevaPeticion.cola_client = nameColaCliente;
 
 
     //Meterlo en la cola
@@ -110,6 +140,7 @@ int modify_value(int key, char* value1, int value2, double value3) {
     //Ver el codigo de error
     struct Respuesta res;
     if (res.result!=0){
+        free(nameColaCliente);
         return -1;
     }
     return 0;
@@ -125,14 +156,17 @@ int exist(int key) {
     nuevaPeticion.opcode = EXIST;
     nuevaPeticion.value = tuple;
     nuevaPeticion.alt_key = NULL;
+    nuevaPeticion.cola_client = nameColaCliente;
 
     //Meterlo en la cola
 
     //Ver el codigo de error
     struct Respuesta res;
     if (res.result!=0){
+        free(nameColaCliente);
         return -1;
     }
+
     return 0;
 }
 
@@ -146,13 +180,23 @@ int copy_key(int key1, int key2) {
     nuevaPeticion.opcode = COPY_KEY;
     nuevaPeticion.value = tuple;
     nuevaPeticion.alt_key = key2;
+    nuevaPeticion.cola_client = nameColaCliente;
 
     //Meterlo en la cola
 
     //Ver el codigo de error
     struct Respuesta res;
     if (res.result!=0){
+        free(nameColaCliente);
         return -1;
     }
     return 0;
+}
+
+int shutdown(void){
+    if (free(nameColaCliente)){
+        return 0;
+    }else{
+        return -1;
+    }
 }

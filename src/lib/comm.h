@@ -42,7 +42,7 @@ struct Peticion {
 
     int opcode;
     char nombre[MAX_NAME_COLA];
-    char cola_client[MAX_NAME_COLA];
+    char* cola_client;
     struct Tupla value;
     int alt_key;
 };
