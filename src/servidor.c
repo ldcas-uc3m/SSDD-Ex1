@@ -17,7 +17,7 @@ bool copiado = false;  // variable condicional de control
 
 // list
 List list;
-bool init = false;
+bool isInit = false;
 
 
 void tratar_peticion(struct Peticion* p) {
@@ -38,12 +38,12 @@ void tratar_peticion(struct Peticion* p) {
 
     switch (pet.opcode) {
         case 0:
-            if (init) {
+            if (isInit) {
                 res.result = -1;
                 break;
             }
             res.result = init(&list);
-            init = true;
+            isInit = true;
             break;
 
         case 1:
