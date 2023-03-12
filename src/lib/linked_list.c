@@ -19,7 +19,7 @@ int init(List* l) {
     Una lista vacía es una lista que apunta a NULL.
     */
 
-	pthread_mutex_init(&mutex_l, NULL);
+	pthread_mutex_init(&mutex_list, NULL);
     
     *l = NULL;
 
@@ -37,18 +37,18 @@ int set(List* l, int key, char* value1, int value2, double value3) {
     // traverse the list
     List aux = *l;  // head
 
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&mutex_list);
     while (aux != NULL) {
         if (aux->key == key) {  // key is already inserted
             perror("Key already inserted\n");
-            pthread_mutex_unlock(&mutex_l);
+            pthread_mutex_unlock(&mutex_list);
             return -1;
         }
         else {  // next element
             aux = aux->next;
         }
     }
-    pthread_mutex_unlock(&mutex_l);
+    pthread_mutex_unlock(&mutex_list);
     // aux is now tail
     
     // insert new element
@@ -80,14 +80,14 @@ int set(List* l, int key, char* value1, int value2, double value3) {
 
     // link to the list
     if (*l == NULL) {  // emtpy list, insert in head
-        pthread_mutex_lock(&mutex_l);
+        pthread_mutex_lock(&mutex_list);
         *l = ptr;
-        pthread_mutex_unlock(&mutex_l);
+        pthread_mutex_unlock(&mutex_list);
     }
     else {  // insert in tail
-        pthread_mutex_lock(&mutex_l);
+        pthread_mutex_lock(&mutex_list);
         aux->next = ptr;
-        pthread_mutex_unlock(&mutex_l);
+        pthread_mutex_unlock(&mutex_list);
     }
     return 0;
 }
@@ -101,20 +101,20 @@ int get(List l, int key, char* value1, int* value2, double* value3) {
     List aux = l;  // head
 
     // traverse the list
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&mutex_list);
     while (aux != NULL) {
         if (aux->key == key) {  // found
             strcpy(value1, aux->value1);
             *value2 = aux->value2;
             *value3 = aux->value3;
 
-            pthread_mutex_unlock(&mutex_l);
+            pthread_mutex_unlock(&mutex_list);
             return 0;  
         } else {  // next element
             aux = aux->next;
         }
     }
-    pthread_mutex_unlock(&mutex_l);
+    pthread_mutex_unlock(&mutex_list);
 
     perror("Element not found\n");
     return -1;  // not found
@@ -130,7 +130,7 @@ int printList(List l) {
 
     printf("[");
 
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&mutex_list);
     while (aux != NULL) {
         printf("(%i, %s, %i, %f)", aux->key, aux->value1, aux->value2, aux->value3);
         aux = aux->next;
@@ -138,7 +138,7 @@ int printList(List l) {
             printf(", ");
         }
     }
-    pthread_mutex_unlock(&mutex_l);
+    pthread_mutex_unlock(&mutex_list);
 
     printf("]\n");
 
@@ -157,16 +157,16 @@ int deleteNode(List* l, int key) {
         return -1;
     
     // primer elemento de la lista
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&mutex_list);
     if (key == (*l)->key) {
         aux = *l;
         *l = (*l)->next;
         free(aux);
 
-        pthread_mutex_unlock(&mutex_l);
+        pthread_mutex_unlock(&mutex_list);
         return 0;
     }
-    pthread_mutex_unlock(&mutex_l);
+    pthread_mutex_unlock(&mutex_list);
 
     aux = *l;
     back = *l;
@@ -198,17 +198,17 @@ int exist(List l, int key) {
     // traverse the list
     List aux = l;  // head
 
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&mutex_list);
     while (aux != NULL) {
         if (aux->key == key) {  // found
-            pthread_mutex_unlock(&mutex_l);
+            pthread_mutex_unlock(&mutex_list);
             return true;
         }
         else {  // next element
             aux = aux->next;
         }
     }
-    pthread_mutex_unlock(&mutex_l);
+    pthread_mutex_unlock(&mutex_list);
     return false;
 }
 
@@ -221,21 +221,21 @@ int modify(List* l, int key, char* value1, int value2, double value3) {
     // traverse the list
     List aux = *l;  // head
 
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&mutex_list);
     while (aux != NULL) {
         if (aux->key == key) {  // found
             strcpy(aux->value1, value1);
             aux->value2 = value2;
             aux->value3 = value3;
 
-            pthread_mutex_unlock(&mutex_l);
+            pthread_mutex_unlock(&mutex_list);
             return 0;
         }
         else {  // next element
             aux = aux->next;
         }
     }
-    pthread_mutex_unlock(&mutex_l);
+    pthread_mutex_unlock(&mutex_list);
 
     return -1;  // not found
 }
@@ -251,21 +251,21 @@ int copyKey(List* l, int key1, int key2) {
     List aux = *l;  // head
     List tmp = NULL;
 
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&mutex_list);
     while (aux != NULL) {
         if (aux->key == key1) {  // found key1
             tmp = aux;
         }
         else if (aux->key == key2) {  // key2 is already inserted
             perror("Key2 already inserted\n");
-            pthread_mutex_unlock(&mutex_l);
+            pthread_mutex_unlock(&mutex_list);
             return -1;
         }
         else {  // next element
             aux = aux->next;
         }
     }
-    pthread_mutex_unlock(&mutex_l);
+    pthread_mutex_unlock(&mutex_list);
     // aux is now tail
     if (tmp == NULL) { // key not found
         perror("Key1 not found\n");
@@ -300,9 +300,9 @@ int copyKey(List* l, int key1, int key2) {
 
 
     // link to the list (insert in tail)
-    pthread_mutex_lock(&mutex_l);
+    pthread_mutex_lock(&mutex_list);
     aux->next = ptr;
-    pthread_mutex_unlock(&mutex_l);
+    pthread_mutex_unlock(&mutex_list);
 
     return 0;
 }
@@ -321,7 +321,7 @@ int destroy(List* l) {
         free(aux);
     }
 
-	pthread_mutex_destroy(&mutex_l);
+	pthread_mutex_destroy(&mutex_list);
 
     return 0;
 }

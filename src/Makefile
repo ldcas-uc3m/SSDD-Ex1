@@ -11,19 +11,19 @@ LDLIBS = -lpthread -lm -lrt
 all: $(BIN_FILES)
 .PHONY : all
 
-cliente: cliente.o
+cliente: cliente.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
-servidor: servidor.o
+servidor: servidor.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
-test: test.o
+test: test.o test_client.o test_server.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
-test_client: test_client.o
+test_client: test_client.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
-test_server: test_server.o
+test_server: test_server.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
 linked_list: linked_list.o

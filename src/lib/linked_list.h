@@ -13,7 +13,7 @@ struct Node {
 typedef struct Node* List;
 
 // sync list concurrency
-pthread_mutex_t mutex_l;
+pthread_mutex_t mutex_list;
 
 
 int init(List* l);

@@ -7,6 +7,7 @@
 
 #include "../lib/linked_list.h"
 #include "../lib/comm.h"
+#include "test_server.h"
 
 
 void testListSeq() {
