@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
             // mutex logic
             pthread_mutex_lock(&mutex_pet);
 
-            while (!copiado) {  // wait for thread to copy id
+            while (!copiado) {  // wait for thread to copy petition
                 pthread_cond_wait(&c_pet, &mutex_pet);
             }
 
