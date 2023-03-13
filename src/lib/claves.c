@@ -14,6 +14,7 @@ Implementación de las operaciones del cliente
 #define MODIFY_VALUE 3
 #define EXIST 4
 #define COPY_KEY 5
+#define SHUTDOWN 6
 
 #define NUM_MENSAJES 10;
 
@@ -98,6 +99,11 @@ int get_value(int key, char* value1, int* value2, double* value3) {
     nuevaPeticion.alt_key = NULL;
     nuevaPeticion.cola_client = nameColaCliente;
 
+    mqd_t mqd;
+    struct mq_attr atributos;
+    atributos.mq_msgsize = sizeof(nuevaPeticion);
+    atributos.mq_maxmsg = NUM_MENSAJES;    
+
     //Pedir la informacion a la cola
     struct Respuesta res;
 
@@ -134,6 +140,11 @@ int modify_value(int key, char* value1, int value2, double value3) {
     nuevaPeticion.alt_key = NULL;
     nuevaPeticion.cola_client = nameColaCliente;
 
+    mqd_t mqd;
+    struct mq_attr atributos;
+    atributos.mq_msgsize = sizeof(nuevaPeticion);
+    atributos.mq_maxmsg = NUM_MENSAJES;    
+
 
     //Meterlo en la cola
 
@@ -160,6 +171,11 @@ int exist(int key) {
 
     //Meterlo en la cola
 
+    mqd_t mqd;
+    struct mq_attr atributos;
+    atributos.mq_msgsize = sizeof(nuevaPeticion);
+    atributos.mq_maxmsg = NUM_MENSAJES;    
+
     //Ver el codigo de error
     struct Respuesta res;
     if (res.result!=0){
@@ -184,6 +200,11 @@ int copy_key(int key1, int key2) {
 
     //Meterlo en la cola
 
+    mqd_t mqd;
+    struct mq_attr atributos;
+    atributos.mq_msgsize = sizeof(nuevaPeticion);
+    atributos.mq_maxmsg = NUM_MENSAJES;    
+
     //Ver el codigo de error
     struct Respuesta res;
     if (res.result!=0){
@@ -194,6 +215,16 @@ int copy_key(int key1, int key2) {
 }
 
 int shutdown(void){
+    struct Tupla tuple;
+
+    struct Peticion nuevaPeticion;
+    nuevaPeticion.opcode = SHUTDOWN;
+
+    mqd_t mqd;
+    struct mq_attr atributos;
+    atributos.mq_msgsize = sizeof(nuevaPeticion);
+    atributos.mq_maxmsg = NUM_MENSAJES;    
+
     if (free(nameColaCliente)){
         return 0;
     }else{
