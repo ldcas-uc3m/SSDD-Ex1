@@ -1,3 +1,7 @@
+/*
+Implementación de una linked list que guarda tuplas (int key, char value1[], int value2, double value3)
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +23,10 @@ int init(List* l) {
     Una lista vacía es una lista que apunta a NULL.
     */
 
-	pthread_mutex_init(&mutex_list, NULL);
+	if (pthread_mutex_init(&mutex_list, NULL) != 0) {
+        perror("Failed to create mutex\n");
+        return -1;
+    }
     
     *l = NULL;
 
@@ -30,7 +37,7 @@ int init(List* l) {
 int set(List* l, int key, char* value1, int value2, double value3) {
     /*
     Inserta una nueva tupla en la lista l.
-    La inserción se hace al final de la lista.
+    La inserción se hace al principio de la lista.
     Comprueba si hay keys repetidas.
     */
 
@@ -84,9 +91,10 @@ int set(List* l, int key, char* value1, int value2, double value3) {
         *l = ptr;
         pthread_mutex_unlock(&mutex_list);
     }
-    else {  // insert in tail
+    else {  // insert in head
         pthread_mutex_lock(&mutex_list);
-        aux->next = ptr;
+        ptr->next = *l;
+        *l = ptr;
         pthread_mutex_unlock(&mutex_list);
     }
     return 0;
@@ -237,6 +245,7 @@ int modify(List* l, int key, char* value1, int value2, double value3) {
     }
     pthread_mutex_unlock(&mutex_list);
 
+    perror("Element not found\n");
     return -1;  // not found
 }
 
@@ -247,14 +256,20 @@ int copyKey(List* l, int key1, int key2) {
     Checks if key2 already exists 
     */
 
+    if (key1 == key2) {
+        perror("Key already inserted\n");
+        return -1;
+    }
+
     // traverse the list
     List aux = *l;  // head
     List tmp = NULL;
-
+    
     pthread_mutex_lock(&mutex_list);
     while (aux != NULL) {
         if (aux->key == key1) {  // found key1
             tmp = aux;
+            break;
         }
         else if (aux->key == key2) {  // key2 is already inserted
             perror("Key2 already inserted\n");
@@ -299,9 +314,10 @@ int copyKey(List* l, int key1, int key2) {
     ptr->next = NULL;
 
 
-    // link to the list (insert in tail)
+    // link to the list (insert in head)
     pthread_mutex_lock(&mutex_list);
-    aux->next = ptr;
+    ptr->next = *l;
+    *l = ptr;
     pthread_mutex_unlock(&mutex_list);
 
     return 0;
@@ -315,12 +331,16 @@ int destroy(List* l) {
 
     List aux;
 
+    pthread_mutex_lock(&mutex_list);
+
     while (*l != NULL) {
         aux = *l;
         *l = aux->next;
+        free(aux->value1);
         free(aux);
     }
 
+    pthread_mutex_unlock(&mutex_list);
 	pthread_mutex_destroy(&mutex_list);
 
     return 0;

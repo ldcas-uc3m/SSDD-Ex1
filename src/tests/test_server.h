@@ -2,8 +2,8 @@
 #define _TEST_SERVER_H_
 
 
-void testListSeq();
-void testListConc();
+int testListSeq();
+int testListConc();
 
 
 #endif

@@ -10,10 +10,13 @@
 
 
 // sync petitions
-pthread_mutex_t mutex_pet;
+pthread_mutex_t mutex_pet;  // mutex for petition
 pthread_cond_t c_pet;  // variable condicional de bloqueo
 bool copiado = false;  // variable condicional de control
 
+// shutdown
+bool shutdown = false;
+pthread_mutex_t mutex_shutdown;
 
 // list
 List list;
@@ -36,8 +39,10 @@ void tratar_peticion(struct Peticion* p) {
     // treat petition
     struct Respuesta res;
 
+    printf("Received (opcode: %i, key: %i, value1: %s, value2: %i, value3: %f)\n", pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3);
+
     switch (pet.opcode) {
-        case 0:
+        case 0:  // init
             if (isInit) {
                 res.result = -1;
                 break;
@@ -46,28 +51,35 @@ void tratar_peticion(struct Peticion* p) {
             isInit = true;
             break;
 
-        case 1:
+        case 1:  // set
             res.result = set(&list, pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3);
             break;
 
-        case 2:
-            res.result = get(&list, pet.value.clave, res.value.value1, &(res.value.value2), &(res.value.value3));
+        case 2:  // get
+            res.result = get(list, pet.value.clave, res.value.value1, &(res.value.value2), &(res.value.value3));
             break;
         
-        case 3:
+        case 3:  // modify
             res.result = modify(&list, pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3);
             break;
         
-        case 4:
-            res.result = exist(&list, pet.value.clave);
+        case 4:  // exist
+            res.result = exist(list, pet.value.clave);
             break;
 
-        case 5:
+        case 5:  // copyKey
             res.result = copyKey(&list, pet.value.clave, pet.alt_key);
             break;
-        
+
+        case 6:  // shutdown
+            pthread_mutex_lock(&mutex_shutdown);
+            shutdown = true;
+            pthread_mutex_unlock(&mutex_shutdown);
+            break;
+
         default:
             res.result = -1;
+            perror("Undefined operation code\n");
             break;
     }
 
@@ -109,13 +121,14 @@ int main(int argc, char* argv[]) {
     // init mutex and cond
 	pthread_cond_init(&c_pet, NULL);
 	pthread_mutex_init(&mutex_pet, NULL);
+	pthread_mutex_init(&mutex_shutdown, NULL);
 
 	pthread_attr_init(&t_attr);
     pthread_attr_setdetachstate(&t_attr, PTHREAD_CREATE_DETACHED);
 
 
     /* MAIN LOOP */
-    while (true) {  // TODO: exit condition for loop
+    while (true) {
         // receive message
         mq_receive(qs, (char*) &msg, sizeof(struct Peticion), 0);
 
@@ -135,6 +148,11 @@ int main(int argc, char* argv[]) {
             perror("Error al crear el thread\n");
             return -1;
         }
+
+        // exit condition
+        pthread_mutex_lock(&mutex_shutdown);
+        if (shutdown) break;
+        pthread_mutex_unlock(&mutex_shutdown);
     }
 
 
@@ -145,6 +163,7 @@ int main(int argc, char* argv[]) {
 
 	pthread_cond_destroy(&c_pet);
 	pthread_mutex_destroy(&mutex_pet);
+	pthread_mutex_destroy(&mutex_shutdown);
 
 	exit(0);
 }

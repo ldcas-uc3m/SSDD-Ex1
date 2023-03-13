@@ -18,6 +18,7 @@ rm tmp.*
 
 
 # zip it (excluding useless stuff)
+make clean
 tar -rvf ../ejercicio_evaluable1.tar -X exclude_file .
 
 # cleanup
