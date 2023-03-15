@@ -39,7 +39,7 @@ void tratar_peticion(struct Peticion* p) {
     // treat petition
     struct Respuesta res;
 
-    printf("Received (opcode: %i, key: %i, value1: %s, value2: %i, value3: %f)\n", pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3);
+    printf("Received (opcode: %i, key: %i, value1: %s, value2: %i, value3: %f) rom %s\n", pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3, pet.cola_client);
 
     switch (pet.opcode) {
         case 0:  // init
