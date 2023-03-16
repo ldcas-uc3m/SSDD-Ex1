@@ -1,3 +1,7 @@
+/*
+Test program for the linked list library
+*/
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <pthread.h>

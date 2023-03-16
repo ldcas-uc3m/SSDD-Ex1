@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "lib/claves.h"
 
@@ -40,7 +42,7 @@ int main() {
         double value3Get;
         err = get_value(newKey, &value1Get, &value2Get, &value3Get);
         if (err==0){
-            printf("The obtained values are %s , %d, %d", value1Get, value2Get, value3Get);
+            printf("The obtained values are %s , %d, %d\n", value1Get, value2Get, value3Get);
         }else{
             free(value1Get);
             return -1;

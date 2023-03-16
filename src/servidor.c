@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "lib/linked_list.h"
 #include "lib/comm.h"
@@ -13,6 +15,9 @@
 pthread_mutex_t mutex_pet;  // mutex for petition
 pthread_cond_t c_pet;  // variable condicional de bloqueo
 bool copiado = false;  // variable condicional de control
+
+// sync printfs
+pthread_mutex_t mutex_stdout;  // mutex for stdout
 
 // shutdown
 bool shutdown = false;
@@ -29,7 +34,12 @@ void tratar_peticion(struct Peticion* p) {
     // copy petition
 	pthread_mutex_lock(&mutex_pet);
 
-    pet = *p;
+    pet.opcode = p->opcode;
+    pet.cola_client = p->cola_client;
+    pet.alt_key = p->alt_key;
+    strcpy(pet.value.value1, p->value.value1);
+    pet.value.value2 = p->value.value2;
+    pet.value.value3 = p->value.value3;
 
     copiado = true;  // update conditional variable
 	pthread_cond_signal(&c_pet);  // awake main
@@ -39,7 +49,9 @@ void tratar_peticion(struct Peticion* p) {
     // treat petition
     struct Respuesta res;
 
-    printf("Received (opcode: %i, key: %i, value1: %s, value2: %i, value3: %f) rom %s\n", pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3, pet.cola_client);
+    pthread_mutex_lock(&mutex_stdout);
+    printf("%i: Received {opcode: %i, key: %i, value1: %s, value2: %i, value3: %f} from %s\n", getpid(), pet.opcode, pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3, pet.cola_client);
+    pthread_mutex_unlock(&mutex_stdout);
 
     switch (pet.opcode) {
         case 0:  // init
@@ -79,14 +91,20 @@ void tratar_peticion(struct Peticion* p) {
 
         default:
             res.result = -1;
+            pthread_mutex_lock(&mutex_stderr);
             perror("Undefined operation code\n");
+            pthread_mutex_unlock(&mutex_stderr);
+
             break;
     }
 
     // answer
     mqd_t qc = mq_open(pet.cola_client, O_WRONLY);  // client queue
     if (qc == -1) {
+        pthread_mutex_lock(&mutex_stderr);
         perror("No se puede abrir la cola del cliente");
+        pthread_mutex_unlock(&mutex_stderr);
+
         pthread_exit(NULL);
     }
     mq_send(qc, (const char*) &res, sizeof(res), 0);
@@ -122,6 +140,8 @@ int main(int argc, char* argv[]) {
 	pthread_cond_init(&c_pet, NULL);
 	pthread_mutex_init(&mutex_pet, NULL);
 	pthread_mutex_init(&mutex_shutdown, NULL);
+	pthread_mutex_init(&mutex_stdout, NULL);
+	pthread_mutex_init(&mutex_stderr, NULL);
 
 	pthread_attr_init(&t_attr);
     pthread_attr_setdetachstate(&t_attr, PTHREAD_CREATE_DETACHED);
@@ -164,6 +184,8 @@ int main(int argc, char* argv[]) {
 	pthread_cond_destroy(&c_pet);
 	pthread_mutex_destroy(&mutex_pet);
 	pthread_mutex_destroy(&mutex_shutdown);
+	pthread_mutex_destroy(&mutex_stdout);
+	pthread_mutex_destroy(&mutex_stderr);
 
 	exit(0);
 }

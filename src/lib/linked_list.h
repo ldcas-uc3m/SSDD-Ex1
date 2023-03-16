@@ -1,5 +1,13 @@
+/*
+Definition of concurrent linked list library
+*/
+
 #ifndef _LINKED_LIST_H_
 #define _LINKED_LIST_H_
+
+
+// mutex for stderr
+pthread_mutex_t mutex_stderr;
 
 
 struct Node {

@@ -47,7 +47,11 @@ int set(List* l, int key, char* value1, int value2, double value3) {
     pthread_mutex_lock(&mutex_list);
     while (aux != NULL) {
         if (aux->key == key) {  // key is already inserted
+
+            pthread_mutex_lock(&mutex_stderr);
             perror("Key already inserted\n");
+            pthread_mutex_unlock(&mutex_stderr);
+
             pthread_mutex_unlock(&mutex_list);
             return -1;
         }
@@ -65,7 +69,10 @@ int set(List* l, int key, char* value1, int value2, double value3) {
     ptr = (struct Node*) malloc(sizeof(struct Node));
     
     if (ptr == NULL) {
+        pthread_mutex_lock(&mutex_stderr);
         perror("malloc() fail\n");
+        pthread_mutex_unlock(&mutex_stderr);
+
         return -1;
     }
 
@@ -73,7 +80,11 @@ int set(List* l, int key, char* value1, int value2, double value3) {
     ptr->value1 = (char*) malloc(MAX_VALUE1);  // new string
     if (ptr->value1 == NULL) {  // failed allocation
         free(ptr);
+
+        pthread_mutex_lock(&mutex_stderr);
         perror("malloc() fail\n");
+        pthread_mutex_unlock(&mutex_stderr);
+
         return -1;
     }
 
@@ -124,7 +135,10 @@ int get(List l, int key, char* value1, int* value2, double* value3) {
     }
     pthread_mutex_unlock(&mutex_list);
 
+    pthread_mutex_lock(&mutex_stderr);
     perror("Element not found\n");
+    pthread_mutex_unlock(&mutex_stderr);
+
     return -1;  // not found
 }
 
@@ -192,7 +206,11 @@ int deleteNode(List* l, int key) {
             aux = aux->next;
         }
     }
+
+    pthread_mutex_lock(&mutex_stderr);
     perror("Element not found\n");
+    pthread_mutex_unlock(&mutex_stderr);
+
     return -1;  // not found
 }
 
@@ -245,7 +263,10 @@ int modify(List* l, int key, char* value1, int value2, double value3) {
     }
     pthread_mutex_unlock(&mutex_list);
 
+    pthread_mutex_lock(&mutex_stderr);
     perror("Element not found\n");
+    pthread_mutex_unlock(&mutex_stderr);
+
     return -1;  // not found
 }
 
@@ -257,7 +278,10 @@ int copyKey(List* l, int key1, int key2) {
     */
 
     if (key1 == key2) {
+        pthread_mutex_lock(&mutex_stderr);
         perror("Key already inserted\n");
+        pthread_mutex_unlock(&mutex_stderr);
+
         return -1;
     }
 
@@ -272,7 +296,11 @@ int copyKey(List* l, int key1, int key2) {
             break;
         }
         else if (aux->key == key2) {  // key2 is already inserted
+
+            pthread_mutex_lock(&mutex_stderr);
             perror("Key2 already inserted\n");
+            pthread_mutex_unlock(&mutex_stderr);
+
             pthread_mutex_unlock(&mutex_list);
             return -1;
         }
@@ -283,7 +311,10 @@ int copyKey(List* l, int key1, int key2) {
     pthread_mutex_unlock(&mutex_list);
     // aux is now tail
     if (tmp == NULL) { // key not found
+        pthread_mutex_lock(&mutex_stderr);
         perror("Key1 not found\n");
+        pthread_mutex_unlock(&mutex_stderr);
+
         return -1;
     } 
 
@@ -294,7 +325,10 @@ int copyKey(List* l, int key1, int key2) {
     ptr = (struct Node*) malloc(sizeof(struct Node));
     
     if (ptr == NULL) {
+        pthread_mutex_lock(&mutex_stderr);
         perror("malloc() fail\n");
+        pthread_mutex_unlock(&mutex_stderr);
+
         return -1;
     }
 
@@ -302,7 +336,11 @@ int copyKey(List* l, int key1, int key2) {
     ptr->value1 = (char*) malloc(MAX_VALUE1);  // new string
     if (ptr->value1 == NULL) {  // failed allocation
         free(ptr);
+
+        pthread_mutex_lock(&mutex_stderr);
         perror("malloc() fail\n");
+        pthread_mutex_unlock(&mutex_stderr);
+
         return -1;
     }
 
