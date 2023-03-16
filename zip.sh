@@ -23,5 +23,3 @@ tar -rvf ../ejercicio_evaluable1.tar -X exclude_file .
 
 # cleanup
 git reset --hard HEAD
-rm -f zip.sh
-git commit -am "zipped"

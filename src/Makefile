@@ -1,6 +1,6 @@
 BIN_FILES  = cliente servidor
 TEST_FILES = test test_client test_server
-VPATH = lib test  # path with source files not found in current dir
+VPATH = lib tests  # path with source files not found in current dir
 CC = gcc
 
 CFLAGS = -g -I$(INSTALL_PATH)/include -Wall
@@ -17,9 +17,6 @@ cliente: cliente.o claves.o linked_list.o
 	
 servidor: servidor.o server_impl.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
-	
-linked_list: linked_list.o
-	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 
 test_client: test_client.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
@@ -27,7 +24,7 @@ test_client: test_client.o linked_list.o
 test_server: test_server.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 
-test: test_server.o test_client.o
+test: test_server.o test_client.o servidor claves.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
 

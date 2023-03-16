@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "lib/linked_list.h"
+#include "lib/server_impl.h"
 #include "lib/comm.h"
 
 
@@ -23,9 +23,6 @@ pthread_mutex_t mutex_stdout;  // mutex for stdout
 bool shutdown = false;
 pthread_mutex_t mutex_shutdown;
 
-// list
-List list;
-bool isInit = false;
 
 
 void tratar_peticion(struct Peticion* p) {
@@ -55,32 +52,27 @@ void tratar_peticion(struct Peticion* p) {
 
     switch (pet.opcode) {
         case 0:  // init
-            if (isInit) {
-                res.result = -1;
-                break;
-            }
-            res.result = init(&list);
-            isInit = true;
+            res.result = init();
             break;
 
         case 1:  // set
-            res.result = set(&list, pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3);
+            res.result = set(pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3);
             break;
 
         case 2:  // get
-            res.result = get(list, pet.value.clave, res.value.value1, &(res.value.value2), &(res.value.value3));
+            res.result = get(pet.value.clave, res.value.value1, &(res.value.value2), &(res.value.value3));
             break;
         
         case 3:  // modify
-            res.result = modify(&list, pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3);
+            res.result = modify(pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3);
             break;
         
         case 4:  // exist
-            res.result = exist(list, pet.value.clave);
+            res.result = exist(pet.value.clave);
             break;
 
         case 5:  // copyKey
-            res.result = copyKey(&list, pet.value.clave, pet.alt_key);
+            res.result = copy_key(pet.value.clave, pet.alt_key);
             break;
 
         case 6:  // shutdown
@@ -91,9 +83,7 @@ void tratar_peticion(struct Peticion* p) {
 
         default:
             res.result = -1;
-            pthread_mutex_lock(&mutex_stderr);
             perror("Undefined operation code\n");
-            pthread_mutex_unlock(&mutex_stderr);
 
             break;
     }
@@ -101,9 +91,7 @@ void tratar_peticion(struct Peticion* p) {
     // answer
     mqd_t qc = mq_open(pet.cola_client, O_WRONLY);  // client queue
     if (qc == -1) {
-        pthread_mutex_lock(&mutex_stderr);
         perror("No se puede abrir la cola del cliente");
-        pthread_mutex_unlock(&mutex_stderr);
 
         pthread_exit(NULL);
     }
@@ -141,7 +129,6 @@ int main(int argc, char* argv[]) {
 	pthread_mutex_init(&mutex_pet, NULL);
 	pthread_mutex_init(&mutex_shutdown, NULL);
 	pthread_mutex_init(&mutex_stdout, NULL);
-	pthread_mutex_init(&mutex_stderr, NULL);
 
 	pthread_attr_init(&t_attr);
     pthread_attr_setdetachstate(&t_attr, PTHREAD_CREATE_DETACHED);
@@ -177,15 +164,13 @@ int main(int argc, char* argv[]) {
 
 
     // cleanup
-    destroy(&list);
-
     mq_close(qs);
+    destroy();
 
 	pthread_cond_destroy(&c_pet);
 	pthread_mutex_destroy(&mutex_pet);
 	pthread_mutex_destroy(&mutex_shutdown);
 	pthread_mutex_destroy(&mutex_stdout);
-	pthread_mutex_destroy(&mutex_stderr);
 
 	exit(0);
 }

@@ -8,7 +8,7 @@ Definición de las estructuras de Petición y Respuesta
 #define MAX_NAME_COLA 80
 #define MAX_VALUE1 256
 #define MQUEUE_SIZE 10
-#define SERVER_Q_NAME "Super-cool-server-queue-thingy"
+#define SERVER_Q_NAME "/Super-cool-server-queue-thingy"
 
 
 struct Tupla {

@@ -6,10 +6,6 @@ Definition of concurrent linked list library
 #define _LINKED_LIST_H_
 
 
-// mutex for stderr
-pthread_mutex_t mutex_stderr;
-
-
 struct Node {
     int key;
     char* value1;
@@ -20,18 +16,15 @@ struct Node {
 
 typedef struct Node* List;
 
-// sync list concurrency
-pthread_mutex_t mutex_list;
 
-
-int init(List* l);
-int set(List* l, int key, char* value1, int value2, double value3);
-int get(List l, int key, char* value1, int* value2, double* value3);
-int exist(List l, int key);
-int modify(List* l, int key, char* value1, int value2, double value3);
+int initList(List* l);
+int setKey(List* l, int key, char* value1, int value2, double value3);
+int getKey(List l, int key, char* value1, int* value2, double* value3);
+int existKey(List l, int key);
+int modifyKey(List* l, int key, char* value1, int value2, double value3);
 int copyKey(List* l, int key1, int key2);
 int printList(List l);
-int deleteNode(List* l, int key);
-int destroy(List* l);
+int deleteKey(List* l, int key);
+int destroyList(List* l);
 
 #endif

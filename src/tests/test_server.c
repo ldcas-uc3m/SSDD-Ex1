@@ -36,22 +36,22 @@ int testListSeq() {
 
 
     // create list
-    if (init(&list) == 0) {
+    if (initList(&list) == 0) {
         printf("List created @ %p.\n", &list);
     } else return -1;
 
-    // set()
+    // setKey()
     char str[] = "pene";
-    if (set(&list, 420, str, 69, 420.69) == 0) {
+    if (setKey(&list, 420, str, 69, 420.69) == 0) {
         printf("Inserted (420, \"pene\", 69, 420.69)\n");
     } else return -1;
 
-    if (set(&list, 421, str, 69, 420.69) == 0) {
+    if (setKey(&list, 421, str, 69, 420.69) == 0) {
         printf("Inserted (421, \"pene\", 69, 420.69)\n");
     } else return -1;
 
     // try duplicate
-    if (set(&list, 420, str, 69, 420.69) == -1) {
+    if (setKey(&list, 420, str, 69, 420.69) == -1) {
         printf("Failed to insert (420, \"pene\", 69, 420.69)\n");
     } else return -1;
 
@@ -60,34 +60,34 @@ int testListSeq() {
     printf("\n");
 
 
-    // get()
+    // getKey()
     char value1[MAX_VALUE1];
     int value2;
     double value3;
-    get(list, 420, value1, &value2, &value3);
+    getKey(list, 420, value1, &value2, &value3);
     printf("Retrieved (420, %s, %i, %f).\n", value1, value2, value3);
 
-    if (get(list, 69, value1, &value2, &value3) == -1) {
+    if (getKey(list, 69, value1, &value2, &value3) == -1) {
         printf("Failed to retrieve key 69.\n");
     } else return -1;
 
-    // exist()
-    if (exist(list, 420) == 1) {
+    // existKey()
+    if (existKey(list, 420) == 1) {
         printf("Found 420.\n");
     } else return -1;
     
-    if (exist(list, 69) == 0) {
+    if (existKey(list, 69) == 0) {
         printf("Failed to find key 69.\n");
     } else return -1;
 
-    // modify()
+    // modifyKey()
     strcpy(str, "caca");
-    if (modify(&list, 420, str, 70, 421.69) == 0) {
+    if (modifyKey(&list, 420, str, 70, 421.69) == 0) {
         printf("Modified key 420 to (420, \"caca\", 70, 421.69).\n");
     } else return -1;
 
-    if (modify(&list, 69, str, 70, 421.69) == -1) {
-        printf("Failed to modify key 69.\n");
+    if (modifyKey(&list, 69, str, 70, 421.69) == -1) {
+        printf("Failed to modifyKey key 69.\n");
     } else return -1;
 
     printf("\nList: ");
@@ -112,12 +112,12 @@ int testListSeq() {
     printf("\n");
 
     
-    // deleteNode()
-    if (deleteNode(&list, 404) == 0) {
+    // deleteKey()
+    if (deleteKey(&list, 404) == 0) {
         printf("Deleted node 404.\n");
     } else return -1;
     
-    if (deleteNode(&list, 404) == -1) {
+    if (deleteKey(&list, 404) == -1) {
         printf("Failed to delete node 404.\n");
     } else return -1;
 
@@ -125,7 +125,7 @@ int testListSeq() {
     printList(list);
     printf("\n");
 
-    if (destroy(&list) == 0) {
+    if (destroyList(&list) == 0) {
         printf("Deleted list.\n");
     }
 
@@ -150,15 +150,15 @@ void workload(int* number) {
 
     // do stuff
     char str[] = "caca";
-    set(&list, i, str, 420, 420.69);
-    exist(list, i + 1);
-    set(&list, i + 1, str, 420, 420.69);
+    setKey(&list, i, str, 420, 420.69);
+    existKey(list, i + 1);
+    setKey(&list, i + 1, str, 420, 420.69);
 
-    modify(&list, i, str, 421, 420.69);
+    modifyKey(&list, i, str, 421, 420.69);
 
     copyKey(&list, i, i * NUM_THREADS);
 
-    deleteNode(&list, i);
+    deleteKey(&list, i);
 
     pthread_exit(NULL);
 }
@@ -174,7 +174,7 @@ int testListConc() {
     printf("\n---Start Concurrent List tests---\n\n");
 
     // init list
-    init(&list);
+    initList(&list);
 
 
     // launch threads
@@ -205,7 +205,7 @@ int testListConc() {
     printList(list);
 
     // cleanup
-    destroy(&list);
+    destroyList(&list);
 
     pthread_cond_destroy(&c_i);
 	pthread_mutex_destroy(&mutex_i);

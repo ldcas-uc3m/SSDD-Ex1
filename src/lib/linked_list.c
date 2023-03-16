@@ -12,29 +12,33 @@ Implementación de una linked list que guarda tuplas (int key, char value1[], in
 #include "comm.h"
 
 
+pthread_mutex_t mutex_list;
+pthread_mutex_t mutex_stderr;
+
 /*
 Todas estas funciones devuelve 0 si se ejecutan con éxito y -1 en caso de algún error.
 */
 
 
-int init(List* l) {
+
+int initList(List* l) {
     /*
     Inicializa una lista como lista vacía. 
     Una lista vacía es una lista que apunta a NULL.
     */
-
-	if (pthread_mutex_init(&mutex_list, NULL) != 0) {
-        perror("Failed to create mutex\n");
-        return -1;
-    }
     
+    // init mutex
+    pthread_mutex_init(&mutex_list, NULL);
+    pthread_mutex_init(&mutex_stderr, NULL);
+
+    // start list
     *l = NULL;
 
     return 0;
 }
 
 
-int set(List* l, int key, char* value1, int value2, double value3) {
+int setKey(List* l, int key, char* value1, int value2, double value3) {
     /*
     Inserta una nueva tupla en la lista l.
     La inserción se hace al principio de la lista.
@@ -112,7 +116,7 @@ int set(List* l, int key, char* value1, int value2, double value3) {
 }
 
 
-int get(List l, int key, char* value1, int* value2, double* value3) {
+int getKey(List l, int key, char* value1, int* value2, double* value3) {
     /*
     Obtiene el valor asociado a una clave key en la lista l, y lo guarda en el argumento value.
     */
@@ -168,7 +172,7 @@ int printList(List l) {
 }
 
 
-int deleteNode(List* l, int key) {
+int deleteKey(List* l, int key) {
     /*
     Elimina un par de la lista l, identificado por su clave key.
     */
@@ -215,7 +219,7 @@ int deleteNode(List* l, int key) {
 }
 
 
-int exist(List l, int key) {
+int existKey(List l, int key) {
     /*
     Checks if the key key exists in the list.
     Returns 1 if found, 0 if not found.
@@ -239,7 +243,7 @@ int exist(List l, int key) {
 }
 
 
-int modify(List* l, int key, char* value1, int value2, double value3) {
+int modifyKey(List* l, int key, char* value1, int value2, double value3) {
     /*
     Modifies the element key
     */
@@ -362,7 +366,7 @@ int copyKey(List* l, int key1, int key2) {
 }
 
 
-int destroy(List* l) {
+int destroyList(List* l) {
     /*
     Elimina todos los elementos de la lista l.
     */
@@ -379,7 +383,9 @@ int destroy(List* l) {
     }
 
     pthread_mutex_unlock(&mutex_list);
-	pthread_mutex_destroy(&mutex_list);
+
+    pthread_mutex_destroy(&mutex_list);
+    pthread_mutex_destroy(&mutex_stderr);
 
     return 0;
 }
