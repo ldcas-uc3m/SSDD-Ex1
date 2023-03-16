@@ -12,10 +12,10 @@ LDLIBS = -pthread -lm -lrt
 all: $(BIN_FILES)
 .PHONY : all
 
-cliente: cliente.o linked_list.o
+cliente: cliente.o claves.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
-servidor: servidor.o linked_list.o
+servidor: servidor.o server_impl.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	
 linked_list: linked_list.o
