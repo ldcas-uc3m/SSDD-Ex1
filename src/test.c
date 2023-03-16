@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "tests/test_server.h"
+#include "tests/test_linked_list.h"
 #include "lib/claves.h"
 
 
@@ -52,15 +52,15 @@ int testFullSeq() {
 
 int main() {
     // test linked list
-    // if (testListSeq() == -1) {
-    //     perror("\n---Sequential List tests Failed---\n\n");
-    //     return -1;
-    // }
+    if (testListSeq() == -1) {
+        perror("\n---Sequential List tests Failed---\n\n");
+        return -1;
+    }
 
-    // if (testListSeq() == -1) {
-    //     perror("\n---Sequential List tests Failed---\n\n");
-    //     return -1;
-    // }
+    if (testListConc() == -1) {
+        perror("\n---Concurrent List tests Failed---\n\n");
+        return -1;
+    }
 
     if (testFullSeq() == -1) {
         perror("\n---Full test Failed---\n\n");

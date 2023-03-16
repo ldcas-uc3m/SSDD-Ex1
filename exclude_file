@@ -5,3 +5,7 @@ img
 run.sh
 zip.sh
 .git*
+servidor
+cliente
+*.o
+*.so
