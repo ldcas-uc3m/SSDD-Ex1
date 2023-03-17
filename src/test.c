@@ -24,11 +24,6 @@ int testFullSeq() {
 	pthread_attr_init(&t_attr);
 
 
-    // launch server
-    if (fork() == 0) {
-        execv(SERVER_PATH, NULL);
-    }
-
     // start client
     init();
 

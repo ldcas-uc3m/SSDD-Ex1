@@ -1,5 +1,5 @@
 /*
-Server implementation
+Server implementation for tuples
 */
 
 #include <stdio.h>

@@ -25,7 +25,7 @@ int init(void) {
 
     char pid=malloc(MAX_NAME_COLA * sizeof(char));
 
-    sprintf(pid,"%d", getpid());
+    sprintf(pid,"%ld", (unsigned long int) pthread_self());
 
     strcat(nameColaCliente, pid);
     free(pid);
