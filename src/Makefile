@@ -30,6 +30,7 @@ test: test_server.o test_client.o servidor claves.o
 
 # TODO: libclaves.so
 
+
 %.o: %.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 

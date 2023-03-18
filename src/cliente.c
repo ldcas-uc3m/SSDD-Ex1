@@ -11,7 +11,7 @@ int main() {
     init();
 
     int key = 0;
-    char value1 = "Prueba";
+    char* value1 = "Prueba";
     int value2 = 1;
     double value3 = 2.4;  
     int err;
@@ -40,9 +40,9 @@ int main() {
         char* value1Get = malloc(MAX_VALUE1 * sizeof(char));
         int value2Get;
         double value3Get;
-        err = get_value(newKey, &value1Get, &value2Get, &value3Get);
+        err = get_value(newKey, value1Get, &value2Get, &value3Get);
         if (err==0){
-            printf("The obtained values are %s , %d, %d\n", value1Get, value2Get, value3Get);
+            printf("The obtained values are %s , %d, %f\n", value1Get, value2Get, value3Get);
         }else{
             free(value1Get);
             return -1;
