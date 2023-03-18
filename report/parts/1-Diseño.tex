@@ -1,0 +1,38 @@
+\section{Diseño e implementación}
+Esta sección se centra en el diseño del servidor, especialmente en la manera de almacenar los datos y en la gestión de los mensajes por parte tanto del servidor como de la API del cliente.
+
+\subsection{Peticiones y respuestas}
+Tanto el servidor como el cliente, se comunican por medio de una cola de menajes que debe usar una estructura de datos como medio para pasar la información. Para ello se ha creado un archivo común a ambos que define tres structs (Tupla, Petición y Respuesta) que son las que se utilizarán durante la comunicación.
+
+La estructura Tupla es la que guarda la información principas, es decir la clave y los tres valores que se necesitan (cadena de caracteres, integer y double).
+
+La estructura de Petición consiste en un integer con el código de operación, dos cadenas de caracteres con el nombre de las colas, tanto del cliente como del servidor, una instancia del struct Tupla y un integer con el valor de la key alternativa para la operación de copiar key.
+
+Por último, la estructura de la Respuesta incluye un integer que corresponde al resultado de la operación y que permite controlar si ha habido algún fallo y una instancia del struct Tupla en caso de que haya que devolver algún valor como en la función de get.
+
+\subsection{Servidor}
+El servidor está estructurado en dos archivos: servidor.c que incluye las funciones tratarPetición y main y el archivo server\_impl.c que es el que se encarga de ejecutar las operaciones principales y guarda los archivos en memoria.
+
+La función main es la que mantiene el servidor ejecutando, abre la cola del servidor, recibe los mensajes de la API del cliente y crea los threads para la ejecución de cada una de las funciones. La función de tratarPetición lee el código de la operación a ejecutar y llama a cada una de las funciones de la implementación.
+
+El código server\_impl es un intermediario con la estructura de datos usada para guardar en memoria, la linked\ list. Guarda la lista principal y redirige cada una de las operaciones al código de la estructura de datos para conseguir el resultado deseado.
+
+\subsubsection{Linked Lists}
+Considerando las restricciones que tenemos, ya que no se debería fijar un número de elementos a almacenar por el servidor, consideramos que la manera mas sencilla y segura de almacenar la información en memoria debería ser una Linked List.
+
+Esta linked list está desarrollada en los fichero linked\_list.c y linked\_list.h y solo es usada por el servidor, ya que el cliente no debe poder acceder a ella sin intermediarios. 
+
+Está organizada por medio de nodos, los cuales están compuestos por un integer para la key, una cadena de caracteres para el valor 1 a almacenar, un integer para el valor2, un double para el valor 3 y un puntero al siguiente nodo. Cada vez que se interte un nuevo nodo, este irá a la head de la Linked List.
+
+La lista tiene una función de inicialización, una para mostrarla en pantalla, otra para borrarla, así como una función específica para cada una de las operaciones que se deben ejecutar. Para cada una de las funciones específicas debe comprobar primero la existencia del valor en la cola y tener en cuenta si estamos en una lista vacía o por el contrario debemos colocar el dato nuevo en la head.
+
+Por último, para controlar la atomicidad de cada una de las operaciones y que no se intente acceder dos veces a la cola interfiriendo con el resultado, se crea al inicializar la lista un sistema de mutex, en el que hacemos un lock cada vez que tenemos que comprobar o añadir algún valor.
+
+\subsection{API del Cliente}
+La API del cliente está en el archivo de claves.c y es el encargado de gestionar las peticiones del cliente y las respuestas que vienen del servidor. Está organizado en: funciones de apertura de colas, envío de peticiones, y las funciones principales. 
+
+Todas las funciones principales siguen la misma estructura: crean structs de petición y respuesta para enviar a través de la cola de mensajes, llaman a las función de mandar petición y analizan el resultado de la petición (que reenvían al cliente).
+
+La función de enviar petición es la que se encarga de la gestión completa de los mensajes, llamando a las funciones de apertura, envío y recepción de mensajes y controlando cualquier error intermedio que pueda surgir durante la ejecución de la operación.
+
+Aparte de las ya requeridas, se ha añadido una función de shutdown para indicar la desconexión del cliente y eliminar los datos de ese cliente que se tuvieran en memoria.

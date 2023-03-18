@@ -1,0 +1,17 @@
+\section{Compilación}
+Para compilar los archivos hacemos uso de un make file. La idea es poder cambiar el sistema del servidor y el cliente si es necesario pero mantener la independencia del cliente de estos cambios. Por eso, el archivo de claves, se compila en una librería .so.
+
+El código del makefile está incluido en la entrega y corresponde a un fichero estandar de compilación pero con algunos añadidos para la creación de esta librería dinámica.
+
+Lo primero es la inclusión de la flag "-fPIC" que si es soportado por la maquina, genera un codigo independiente de la posición que permite el linkeado dinámico y evitando cualquier posible límite en el tamaño de la tabla global de offset.
+
+Despues es la inclusión de la flag "-lclaves" para linkear la librería dinámica de libclaves con el archivo principal.
+
+Por último, está la compilación de claves.o en libclaves.so que se ha realizado con el siguiente código (al que se le ha añadido la flag "-shared"):
+
+\begin{lstlisting}
+    libclaves.so: claves.o
+        $(CC) -shared $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
+\end{lstlisting}
+
+Cabe destacar, que el fichero de make incluye también un make clean para eliminar todos los archivos de compilación intermedia.
