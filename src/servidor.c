@@ -74,8 +74,12 @@ void tratar_peticion(struct Peticion* p) {
         case 5:  // copyKey
             res.result = copy_key(pet.value.clave, pet.alt_key);
             break;
+            
+        case 6:  // deleteKey
+            res.result = delete_key(pet.value.clave);
+            break;
 
-        case 6:  // shutdown
+        case 7:  // shutdown
             pthread_mutex_lock(&mutex_shutdown);
             shutdown = true;
             pthread_mutex_unlock(&mutex_shutdown);

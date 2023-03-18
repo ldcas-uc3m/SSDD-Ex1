@@ -34,7 +34,8 @@ struct Peticion {
         - 3: modify_value
         - 4: exist
         - 5: copy_key
-        - 6: shutdown
+        - 6: delete_key
+        - 7: shutdown
     NOMBRE: nombre de la cola del servidor
     COLA_CLIENT: nombre de la cola del cliente
     VALUE: tupla con los datos que se van a almacenar
