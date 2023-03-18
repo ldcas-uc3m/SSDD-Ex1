@@ -12,7 +12,7 @@ all: $(BIN_FILES)
 .PHONY : all
 
 cliente: cliente.o libclaves.so linked_list.o
-	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -L$(INSTALL_PATH) -lclaves $^ -o $@
 	
 servidor: servidor.o server_impl.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
@@ -24,7 +24,7 @@ test_server: test_server.o linked_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 
 test: test_server.o test_client.o servidor libclaves.so
-	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -L$(INSTALL_PATH) -lclaves $^ -o $@
 	
 # TODO: libclaves.so
 libclaves.so: claves.o
