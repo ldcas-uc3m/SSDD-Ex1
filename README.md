@@ -1,7 +1,7 @@
 # Ejercicio Evaluable 1: Colas de mensajes
 By Luis Daniel Casais Mezquida & Lucía María Moya Sans  
 Sistemas Distribuídos 22/23  
-Bachelor's Degree in Computer Science and Engineering, grp. 89  
+Bachelor's Degree in Computer Science and Engineering, grp. 81  
 Universidad Carlos III de Madrid
 
 ## Descripción del ejercicio
@@ -32,5 +32,19 @@ La estructura del código a desarrollar se muestra en la siguiente figura:
 
 
 ## Instalación y ejecución
+Compila con make:
+```bash
+cd src/
+make
+```
 
-LD_LIBRARY_PATH = lib/ ??
+Al usar una librería dinámica, debes enlazarla:
+```bash
+export LD_LIBRARY_PATH=lib/
+```
+
+Y ahora puedes correr el servidor y el cliente:
+```bash
+./servidor &
+./cliente
+```

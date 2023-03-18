@@ -47,7 +47,7 @@ void tratar_peticion(struct Peticion* p) {
     struct Respuesta res;
 
     pthread_mutex_lock(&mutex_stdout);
-    printf("%i: Received {opcode: %i, key: %i, value1: %s, value2: %i, value3: %f} from %s\n", getpid(), pet.opcode, pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3, pet.cola_client);
+    printf("%ld: Received {opcode: %i, key: %i, value1: %s, value2: %i, value3: %f} from %s\n", (unsigned long int) pthread_self(), pet.opcode, pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3, pet.cola_client);
     pthread_mutex_unlock(&mutex_stdout);
 
     switch (pet.opcode) {
