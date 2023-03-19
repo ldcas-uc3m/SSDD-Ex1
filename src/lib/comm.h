@@ -5,7 +5,7 @@ Definición de las estructuras de Petición y Respuesta
 #ifndef _COMM_H_
 #define _COMM_H_
 
-#define MAX_NAME_COLA 80
+#define MAX_NAME_COLA 30
 #define MAX_VALUE1 256
 #define MQUEUE_SIZE 10
 #define SERVER_Q_NAME "/Super-cool-server-queue-thingy"
@@ -43,8 +43,7 @@ struct Peticion {
     */
 
     int opcode;
-    char nombre[MAX_NAME_COLA];
-    char* cola_client;
+    char cola_client[MAX_NAME_COLA];
     struct Tupla value;
     int alt_key;
 };

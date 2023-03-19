@@ -5,7 +5,7 @@ Definición de las operaciones del cliente
 #ifndef _CLAVES_H_
 #define _CLAVES_H_
 
-#define PREFIX ClienteNumero_
+#define PREFIX "/Cliente_"
 #define MAX_VALUE1 256
 
 int init(void);

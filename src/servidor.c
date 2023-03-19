@@ -32,7 +32,8 @@ void tratar_peticion(struct Peticion* p) {
 	pthread_mutex_lock(&mutex_pet);
 
     pet.opcode = p->opcode;
-    pet.cola_client = p->cola_client;
+    strcpy(pet.cola_client, p->cola_client);
+    // printf("%s\n", p->cola_client);
     pet.alt_key = p->alt_key;
     strcpy(pet.value.value1, p->value.value1);
     pet.value.value2 = p->value.value2;
@@ -47,7 +48,7 @@ void tratar_peticion(struct Peticion* p) {
     struct Respuesta res;
 
     pthread_mutex_lock(&mutex_stdout);
-    printf("%ld: Received {opcode: %i, key: %i, value1: %s, value2: %i, value3: %f} from %s\n", (unsigned long int) pthread_self(), pet.opcode, pet.value.clave, pet.value.value1, pet.value.value2, pet.value.value3, pet.cola_client);
+    printf("%ld: Received {opcode: %i, key: %i, alt_key: %i, value1: %s, value2: %i, value3: %f} from %s\n", (unsigned long int) pthread_self(), pet.opcode, pet.value.clave, pet.alt_key,pet.value.value1, pet.value.value2, pet.value.value3, pet.cola_client);
     pthread_mutex_unlock(&mutex_stdout);
 
     switch (pet.opcode) {
@@ -107,6 +108,7 @@ void tratar_peticion(struct Peticion* p) {
 
 
 int main(int argc, char* argv[]) {
+
     // queue stuff
     mqd_t qs;  // server queue
     struct mq_attr q_attr;
@@ -127,6 +129,9 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    // mq_close(qs);
+    // mq_unlink(SERVER_Q_NAME);
+    // return 0;
 
     // init mutex and cond
 	pthread_cond_init(&c_pet, NULL);
@@ -169,7 +174,10 @@ int main(int argc, char* argv[]) {
 
     // cleanup
     mq_close(qs);
+    mq_unlink(SERVER_Q_NAME);
     destroy();
+
+    free(msg);
 
 	pthread_cond_destroy(&c_pet);
 	pthread_mutex_destroy(&mutex_pet);

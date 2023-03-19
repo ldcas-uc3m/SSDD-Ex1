@@ -5,6 +5,7 @@ Simple sequential test client
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "../lib/claves.h"
 
@@ -17,6 +18,7 @@ int standard_run() {
     */
 
     // start list
+    printf("Iniciando servicio\n");
     init();
 
     int key = 0;
@@ -25,12 +27,14 @@ int standard_run() {
     double value3 = 2.4;  
 
     // set
+    printf("Probando set %i %s %i %f\n", key, value1, value2, value3);
     if (set_value(key, value1, value2, value3) != 0) {
         perror("Error while inserting the value\n");
         return -1;
     }
 
     // check previous key exists
+    printf("Probando que existe %i\n", key);
     if (exist(key) != 1) {
         perror("Key doesn't exist\n");
         return -1;
@@ -38,6 +42,7 @@ int standard_run() {
 
     // copy key
     int newKey = 1;
+    printf("Copiando %i a %i\n", key, newKey);
     if (copy_key(key, newKey) != 0) {
         perror("Error while copying the key\n");
         return -1;
@@ -45,6 +50,8 @@ int standard_run() {
 
     // modify value
     int newValue2 = 2;
+    printf("Modificando %i a %s %i %f\n", newKey, value1, newValue2, value3);
+
     if (modify_value(newKey, value1, newValue2, value3) != 0) {
         perror("Error while modifying the tuple\n");
         return -1;
@@ -55,8 +62,10 @@ int standard_run() {
     int value2Get;
     double value3Get;
 
-    if (get_value(newKey, &value1Get, &value2Get, &value3Get) == 0) {
-        printf("The obtained values are %s , %d, %d\n", value1Get, value2Get, value3Get);
+    printf("Obteniendo key %i\n", newKey);
+
+    if (get_value(newKey, value1Get, &value2Get, &value3Get) == 0) {
+        printf("The obtained values are %s , %d, %f\n", value1Get, value2Get, value3Get);
     }
     else {
         free(value1Get);

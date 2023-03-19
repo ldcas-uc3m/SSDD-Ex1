@@ -7,9 +7,11 @@ Implementación de las operaciones del cliente
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <fcntl.h>
 
 #include "claves.h"
 #include "comm.h"
+
 
 #define INIT 0
 #define SET_VALUE 1
@@ -17,43 +19,47 @@ Implementación de las operaciones del cliente
 #define MODIFY_VALUE 3
 #define EXIST 4
 #define COPY_KEY 5
-#define SHUTDOWN 6
+#define DELETE_KEY 6
+#define SHUTDOWN 7
 
 #define NUM_MENSAJES 10;
 
+
 char *nameColaCliente = NULL;
 
+
 mqd_t abrirColaServer(){
-    mqd_t qc = mq_open(SERVER_Q_NAME, O_WRONLY);  // client queue
-    if (qc == -1) {
+    mqd_t qs = mq_open(SERVER_Q_NAME, O_WRONLY);  // server queue
+    if (qs == -1) {
         perror("No se puede abrir la cola del servidor");
         return -1;
     }
-    return qc;
+    return qs;
 }
 
 
 
 mqd_t abrirColaCliente(){
 
-    mqd_t qs;  // server queue
+    mqd_t qc;  // server queue
     struct mq_attr q_attr;
 
     q_attr.mq_maxmsg = MQUEUE_SIZE;
     q_attr.mq_msgsize = sizeof(struct Respuesta);
 
     // init queue
-    qs = mq_open(nameColaCliente, O_CREAT|O_RDONLY, 0700, &q_attr);
-    if (qs == -1) {
-        perror("No se puede crear la cola del servidor\n");
+    qc = mq_open(nameColaCliente, O_CREAT|O_RDONLY, 0700, &q_attr);
+    if (qc == -1) {
+        perror("No se puede crear la cola del cliente\n");
         return -1;
     }
 
-    return qs;
+    return qc;
 }
 
 int cerrarCola(mqd_t queue_id){
     if (mq_close(queue_id) !=-1){
+        mq_unlink(nameColaCliente);
         return 0;
     }else{
         return -1;
@@ -70,26 +76,25 @@ int sendPeticion(struct Peticion *pet, struct Respuesta *res){
     }
 
     //Mandar la informacion
-    if (mq_send(q_server, (const char*) pet, sizeof(pet), 0)==-1){
-        mq_close(q_cliente);
+    if (mq_send(q_server, (const char*) pet, sizeof(struct Peticion), 0)==-1){
+        cerrarCola(q_cliente);
         mq_close(q_server);
         return -1;
     }
+
+    printf("%s: Sent {opcode: %i, key: %i, alt_key: %i, value1: %s, value2: %i, value3: %f}\n", pet->cola_client, pet->opcode, pet->value.clave, pet->alt_key, pet->value.value1, pet->value.value2, pet->value.value3);
 
     // Esperar a la respuesta
     if (mq_receive(q_cliente, (char*) res, sizeof(struct Respuesta), 0)==-1){
-        mq_close(q_cliente);
+        cerrarCola(q_cliente);
         mq_close(q_server);
         return -1;
     }
 
-    mq_close(q_cliente);
+    cerrarCola(q_cliente);
     mq_close(q_server);
 
-    if (res->result != 0){
-        // if (nameColaCliente){
-        //     mq_unlink(nameColaCliente);
-        // }
+    if (res->result == -1) {
         return -1;
     }
 
@@ -100,6 +105,7 @@ int sendPeticion(struct Peticion *pet, struct Respuesta *res){
 int init(void) {
 
     nameColaCliente = (char *) malloc(MAX_NAME_COLA * sizeof(char));
+    sprintf(nameColaCliente, PREFIX);
 
     char* pid = (char *) malloc(MAX_NAME_COLA * sizeof(char));
 
@@ -108,9 +114,13 @@ int init(void) {
     strcat(nameColaCliente, pid);
     free(pid);
 
+    printf("Nombre de cola: %s\n", nameColaCliente);
+
     struct Peticion pet;
     pet.opcode = INIT;
-    pet.cola_client = nameColaCliente;
+    pet.alt_key = 0;
+    pet.value.clave = 0;
+    strcpy(pet.cola_client, nameColaCliente);
 
     struct Respuesta res;
 
@@ -141,7 +151,7 @@ int set_value(int key, char* value1, int value2, double value3) {
 
     pet.opcode = SET_VALUE;
     pet.value = tuple;
-    pet.cola_client = nameColaCliente;
+    strcpy(pet.cola_client, nameColaCliente);
 
     struct Respuesta res;
     
@@ -165,7 +175,8 @@ int get_value(int key, char* value1, int* value2, double* value3) {
 
     pet.opcode = GET_VALUE;
     pet.value = tuple;
-    pet.cola_client = nameColaCliente; 
+    strcpy(pet.cola_client, nameColaCliente);
+
     struct Respuesta res;
         
     int resultCode = sendPeticion(&pet, &res);
@@ -200,7 +211,7 @@ int modify_value(int key, char* value1, int value2, double value3) {
 
     pet.opcode = MODIFY_VALUE;
     pet.value = tuple;
-    pet.cola_client = nameColaCliente; 
+    strcpy(pet.cola_client, nameColaCliente);
     
     struct Respuesta res;
 
@@ -222,7 +233,7 @@ int exist(int key) {
     struct Peticion pet;
     pet.opcode = EXIST;
     pet.value = tuple;
-    pet.cola_client = nameColaCliente; 
+    strcpy(pet.cola_client, nameColaCliente);
 
     //Ver el codigo de error
     struct Respuesta res;
@@ -247,7 +258,7 @@ int copy_key(int key1, int key2) {
     pet.opcode = COPY_KEY;
     pet.value = tuple;
     pet.alt_key = key2;
-    pet.cola_client = nameColaCliente;
+    strcpy(pet.cola_client, nameColaCliente);
 
     //Ver el codigo de error
     struct Respuesta res;
@@ -261,6 +272,29 @@ int copy_key(int key1, int key2) {
     return 0;
 }
 
+
+int delete_key(int key){
+
+    struct Tupla tuple;
+    tuple.clave = key;
+
+    struct Peticion pet;
+    pet.opcode = DELETE_KEY;
+    pet.value = tuple;
+    strcpy(pet.cola_client, nameColaCliente);
+
+    struct Respuesta res;
+
+    int resultCode = sendPeticion(&pet, &res);
+
+    if (res.result==-1 || resultCode==-1){
+        free(nameColaCliente);
+        return -1;
+    }
+    return 0;
+}
+
+
 int shutdown(void){
 
     struct Peticion pet;
@@ -269,7 +303,6 @@ int shutdown(void){
     struct Respuesta res;
 
     int resultCode = sendPeticion(&pet, &res);
-    mq_unlink(nameColaCliente);
     free(nameColaCliente);
 
     return resultCode;
