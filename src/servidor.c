@@ -166,6 +166,7 @@ int main(int argc, char* argv[]) {
         }
 
         // exit condition
+
         pthread_mutex_lock(&mutex_shutdown);
         if (shutdown) break;
         pthread_mutex_unlock(&mutex_shutdown);
@@ -177,12 +178,10 @@ int main(int argc, char* argv[]) {
     mq_unlink(SERVER_Q_NAME);
     destroy();
 
-    free(msg);
-
 	pthread_cond_destroy(&c_pet);
 	pthread_mutex_destroy(&mutex_pet);
 	pthread_mutex_destroy(&mutex_shutdown);
 	pthread_mutex_destroy(&mutex_stdout);
 
-	exit(0);
+	return 0;
 }

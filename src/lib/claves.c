@@ -22,7 +22,7 @@ Implementación de las operaciones del cliente
 #define DELETE_KEY 6
 #define SHUTDOWN 7
 
-#define NUM_MENSAJES 10;
+#define NUM_MENSAJES 10
 
 
 char *nameColaCliente = NULL;
@@ -91,6 +91,9 @@ int sendPeticion(struct Peticion *pet, struct Respuesta *res){
         return -1;
     }
 
+    printf("%s: Received {result: %i, key: %i, value1: %s, value2: %i, value3: %f}\n", pet->cola_client, res->result, res->value.clave, res->value.value1, res->value.value2, res->value.value3);
+
+
     cerrarCola(q_cliente);
     mq_close(q_server);
 
@@ -136,7 +139,6 @@ int init(void) {
 
 
 int set_value(int key, char* value1, int value2, double value3) {
-
     struct Tupla tuple;
     if (strlen(value1)>256){
         return -1;
@@ -152,6 +154,7 @@ int set_value(int key, char* value1, int value2, double value3) {
     pet.opcode = SET_VALUE;
     pet.value = tuple;
     strcpy(pet.cola_client, nameColaCliente);
+
 
     struct Respuesta res;
     
@@ -299,6 +302,7 @@ int shutdown(void){
 
     struct Peticion pet;
     pet.opcode = SHUTDOWN;
+    strcpy(pet.cola_client, nameColaCliente);
 
     struct Respuesta res;
 

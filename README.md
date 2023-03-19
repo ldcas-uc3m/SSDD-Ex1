@@ -31,6 +31,10 @@ La estructura del código a desarrollar se muestra en la siguiente figura:
 ![architecture_schema](img/fig1.png)
 
 
+### Aclaraciones adicionales:
+Cuando se esté desarrollando este ejercicio es posible que en algunas ocasiones las colas de mensajes se queden en un estado inconsistente y tanto el cliente como el servidor fallen en tiempo de ejecución. En estos casos lo mejor es borrar las colas de mensajes que se hayan quedado en el sistema. Para ello pueden eliminarse las colas desde el directorio `/dev/mqueue`.
+
+
 ## Instalación y ejecución
 Compila con make:
 ```bash
