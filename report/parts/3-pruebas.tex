@@ -1,1 +1,13 @@
 \section{Pruebas}
+A la hora de probar el programa, hemos diseñado tres pruebas, en el subdirectiorio \texttt{src/tests/}: \texttt{test\_conc.c}, \texttt{test\_seq.c} y \texttt{test\_linked\_list.c}.
+
+\subsection{Probando la Linked List - \texttt{test\_linked\_list.c}}
+La linked list es la estructura que hemos usado para guardar las tuplas, y debe soportar acceso concurrente.\\
+
+Para ello, hemos desarrollado dos funciones, \texttt{testListSeq()}, la cual prueba todas las funcionalidades de la librería, y \texttt{testListConc()}, la cual ejecuta un \textit{workload} específico entre varios \textit{threads}.
+
+\subsection{Probando cliente secuencial - \texttt{test\_seq.c}}
+Para el cliente secuencial hemos probado todas las funcionalidades de la API mas el doble init y algunos errores posibles.
+
+\subsection{Probando cliente concurrente - \texttt{test\_conc.c}}
+Para el cliente concurrente hemos usado un \textit{workload} parecido al de \texttt{testListConc()} para probar que funcionaba.
