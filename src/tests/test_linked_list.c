@@ -11,7 +11,6 @@ Test program for the linked list library
 
 #include "../lib/linked_list.h"
 #include "../lib/comm.h"
-#include "test_linked_list.h"
 
 
 #define NUM_THREADS 4
